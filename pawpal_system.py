@@ -37,11 +37,11 @@ class Pet:
 
     def add_task(self, task: Task) -> None:
         """Attach a care task to this pet."""
-        raise NotImplementedError
+        self.tasks.append(task)
 
     def list_tasks(self) -> list[Task]:
         """Return all tasks belonging to this pet."""
-        raise NotImplementedError
+        return self.tasks
 
 
 class Owner:
@@ -60,11 +60,18 @@ class Owner:
 
     def add_pet(self, pet: Pet) -> None:
         """Register a pet under this owner."""
-        raise NotImplementedError
+        self.pets.append(pet)
 
     def list_pets(self) -> list[Pet]:
         """Return all pets owned by this owner."""
-        raise NotImplementedError
+        return self.pets
+
+    def all_tasks(self) -> list[Task]:
+        """Gather tasks across every pet into one flat list for the Scheduler."""
+        tasks: list[Task] = []
+        for pet in self.pets:
+            tasks.extend(pet.list_tasks())
+        return tasks
 
 
 class Scheduler:

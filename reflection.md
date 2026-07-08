@@ -5,12 +5,26 @@
 **a. Initial design**
 
 - Briefly describe your initial UML design.
+
+
+
 - What classes did you include, and what responsibilities did you assign to each?
+
+the 4 classes were Owner, which contains the name, mins left and prefs, Pet, containing species and breed and age, Task,which contains duration, priority and category and Scheduler which has a main attribute of available minutes.. 
 
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+
+yes, claude recommended an addition after reviewing my skeleton. it pointed out a missing
+relationship: tasks are stored on each Pet, but the Scheduler's build_plan() expects one flat
+list of tasks. with a multi-pet owner, nothing connected the two, so app.py would have had to
+manually loop over every pet and combine their task lists. to fix this i added an all_tasks()
+method to the Owner class that gathers the tasks from all of the owner's pets into a single
+list. this keeps the Scheduler's input clean and puts the "collect everything" job on the
+Owner, which already knows about all the pets. it was purely an addition — no existing classes,
+attributes, or methods were changed.
 
 ---
 
