@@ -1,0 +1,41 @@
+classDiagram
+    %% PawPal+ — UML draft (Phase 2)
+    %% Working diagram: update in Phase 6 to match the final implementation.
+
+    class Owner {
+        +str name
+        +int available_minutes
+        +list~str~ preferences
+        +add_pet(pet Pet) None
+        +list_pets() list~Pet~
+    }
+
+    class Pet {
+        +str name
+        +str species
+        +str breed
+        +int age
+        +add_task(task Task) None
+        +list_tasks() list~Task~
+    }
+
+    class Task {
+        +str title
+        +int duration_minutes
+        +str priority
+        +str category
+        +bool recurring
+        +priority_rank() int
+    }
+
+    class Scheduler {
+        +int available_minutes
+        +build_plan(tasks list~Task~) list~Task~
+        +sort_by_priority(tasks list~Task~) list~Task~
+        +explain() str
+    }
+
+    Owner "1" --> "*" Pet : owns
+    Pet "1" --> "*" Task : has
+    Scheduler "1" ..> "*" Task : schedules
+    Owner "1" --> "1" Scheduler : uses
