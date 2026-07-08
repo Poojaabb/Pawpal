@@ -12,6 +12,17 @@ A busy pet owner needs help staying consistent with pet care. They want an assis
 
 Your job is to design the system first (UML), then implement the logic in Python, then connect it to the Streamlit UI.
 
+## ✨ Features
+
+- **Owner & pet management** — an `Owner` can have multiple `Pet`s, and each pet keeps its own list of care `Task`s.
+- **Task details** — every task has a title, duration, priority, optional start time (`HH:MM`), and a repeat frequency.
+- **Sorting by time** — `Scheduler.sort_by_time()` orders the day chronologically (unscheduled tasks last).
+- **Sorting by priority** — `Scheduler.sort_by_priority()` puts high-priority tasks first, shorter tasks breaking ties.
+- **Filtering** — by completion status (`Scheduler.filter_by_status()`) or by pet (`Owner.tasks_for_pet()`).
+- **Conflict warnings** — `Scheduler.conflict_warnings()` flags exact same-time clashes and run-over overlaps with friendly messages (never crashes).
+- **Daily / weekly recurrence** — completing a recurring task (`Task.mark_complete()`) auto-creates the next occurrence using `datetime.timedelta`.
+- **Two front-ends** — an interactive Streamlit UI (`app.py`) and a terminal demo (`main.py`).
+
 ## What you will build
 
 Your final app should:
@@ -44,14 +55,20 @@ pip install -r requirements.txt
 
 ## 🖥️ Sample Output
 
-Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
+A day sorted by time, with conflict warnings, produced by `python main.py`:
 
 ```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+=== Sorted by time (unscheduled last) ===
+   08:00  Morning walk      30 min  [high  ] (todo)
+   08:15  Feeding           10 min  [high  ] (todo)
+   12:00  Litter cleanup    10 min  [medium] (todo)
+   12:00  Medication         5 min  [high  ] (todo)
+   18:00  Evening walk      30 min  [high  ] (todo)
+     --    Play/enrichment   15 min  [low   ] (todo)
+
+=== Conflict warnings ===
+   WARNING: 'Morning walk' (08:00, 30 min) runs into 'Feeding' at 08:15.
+   WARNING: 'Litter cleanup' and 'Medication' are both scheduled at 12:00.
 ```
 
 ## 🧪 Testing PawPal+
@@ -102,12 +119,56 @@ demonstrated end-to-end by the CLI demo in `main.py`.
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+### The Streamlit app (`streamlit run app.py`)
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+The UI is organized top-to-bottom so a pet owner can build a full day in a few clicks:
+
+1. **Owner** — set your name and how many minutes you have available today.
+2. **Pets** — fill the "Add pet" form (name, species, breed, age) and submit. Each pet appears in a table showing how many tasks it has. Add as many pets as you like.
+3. **Tasks** — pick a pet, then add a task with a title, duration, priority, an optional start time, and a repeat setting (none / daily / weekly).
+4. **Today's Schedule** — the app calls `Scheduler.sort_by_time()` to show every task in chronological order (unscheduled tasks last), with columns for pet, duration, priority, repeat, and status. Use the "Show tasks for" dropdown to filter to a single pet.
+5. **Conflict warnings** — the app calls `Scheduler.conflict_warnings()` and renders each clash as a yellow `st.warning` (e.g. two tasks at the same time, or one running into the next). If nothing overlaps, it shows a green "No scheduling conflicts" message.
+
+Because the `Owner` is stored in `st.session_state`, everything you add persists as you interact with the page.
+
+**Example workflow:** add pet *Biscuit* → schedule *Morning walk* at 08:00 (daily) → schedule *Feeding* at 08:15 → open **Today's Schedule** and see the two tasks in order with a warning that the walk runs into feeding.
+
+### The terminal demo (`python main.py`)
+
+Running the CLI demo exercises every `Scheduler` behavior without the UI:
+
+```
+=== All tasks (insertion order) ===
+   18:00  Evening walk      30 min  [high  ] (todo)
+   08:00  Morning walk      30 min  [high  ] (todo)
+   08:15  Feeding           10 min  [high  ] (todo)
+   12:00  Litter cleanup    10 min  [medium] (todo)
+   12:00  Medication         5 min  [high  ] (todo)
+     --    Play/enrichment   15 min  [low   ] (todo)
+
+=== Sorted by time (unscheduled last) ===
+   08:00  Morning walk      30 min  [high  ] (todo)
+   08:15  Feeding           10 min  [high  ] (todo)
+   12:00  Litter cleanup    10 min  [medium] (todo)
+   12:00  Medication         5 min  [high  ] (todo)
+   18:00  Evening walk      30 min  [high  ] (todo)
+     --    Play/enrichment   15 min  [low   ] (todo)
+
+=== Sorted by priority (high first) ===
+   12:00  Medication         5 min  [high  ] (todo)
+   08:15  Feeding           10 min  [high  ] (todo)
+   18:00  Evening walk      30 min  [high  ] (todo)
+   08:00  Morning walk      30 min  [high  ] (todo)
+   12:00  Litter cleanup    10 min  [medium] (todo)
+     --    Play/enrichment   15 min  [low   ] (todo)
+
+=== Conflict warnings ===
+   WARNING: 'Morning walk' (08:00, 30 min) runs into 'Feeding' at 08:15.
+   WARNING: 'Litter cleanup' and 'Medication' are both scheduled at 12:00.
+
+=== Recurring: complete Biscuit's daily 'Morning walk' ===
+   Original due 2026-07-07 -> completed=True
+   Auto-created next occurrence due 2026-07-08
+```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
