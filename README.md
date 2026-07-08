@@ -56,19 +56,37 @@ Paste a sample of your app's CLI or Streamlit output here so a reader can see wh
 
 ## 🧪 Testing PawPal+
 
+The automated test suite lives in `tests/test_pawpal.py` (18 tests). Run it with:
+
 ```bash
 # Run the full test suite:
-pytest
+python -m pytest
 
 # Run with coverage:
 pytest --cov
 ```
 
+**What the tests cover:**
+
+- **Sorting** — tasks come back in chronological order (unscheduled last), priority sort puts high first with shorter tasks breaking ties, and sorting doesn't mutate the input list.
+- **Filtering** — by completion status (done vs. todo) and by pet name (including an unknown pet returning an empty list).
+- **Recurring tasks** — completing a `daily` task creates a fresh task due the next day, `weekly` advances 7 days, and a one-off task returns `None`.
+- **Conflict detection** — exact same-time clashes and run-over overlaps are flagged, while spaced-out and unscheduled tasks are not.
+- **Edge cases** — a pet with no tasks, an owner with no pets, and sorting an empty list all behave safely.
+
 Sample test output:
 
 ```
-# Paste your pytest output here
+============================= test session starts =============================
+platform win32 -- Python 3.13.2, pytest-9.1.1, pluggy-1.6.0
+collected 18 items
+
+tests\test_pawpal.py ..................                                  [100%]
+
+============================= 18 passed in 0.06s ==============================
 ```
+
+**Confidence Level: ⭐⭐⭐⭐☆ (4/5)** — every core behavior (sorting, filtering, recurrence, conflict detection) is covered and passing. Dropping one star because conflict detection only compares time-adjacent tasks (see the tradeoff noted in `reflection.md` §2b), and `Scheduler.build_plan()` / `explain()` are not yet implemented or tested.
 
 ## 📐 Smarter Scheduling
 
