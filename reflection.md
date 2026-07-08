@@ -17,8 +17,7 @@ the 4 classes were Owner, which contains the name, mins left and prefs, Pet, con
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
-yes, claude recommended an addition after reviewing my skeleton. it pointed out a missing
-relationship: tasks are stored on each Pet, but the Scheduler's build_plan() expects one flat
+yes, claude recommended an addition after reviewing my skeleton. it pointed out a missing relationship: tasks are stored on each Pet, but the Scheduler's build_plan() expects one flat
 list of tasks. with a multi-pet owner, nothing connected the two, so app.py would have had to
 manually loop over every pet and combine their task lists. to fix this i added an all_tasks()
 method to the Owner class that gathers the tasks from all of the owner's pets into a single
@@ -39,6 +38,17 @@ attributes, or methods were changed.
 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
+
+My conflict detector (Scheduler.find_conflicts / conflict_warnings) only compares tasks that
+are next to each other after sorting by start time — it checks whether one task's end time runs
+past the next task's start time. This means it reliably catches back-to-back overlaps and exact
+same-time clashes, but it does not do a full all-pairs comparison, so an unusual case like one
+very long task overlapping a task two or three slots later could be missed. I chose this
+tradeoff because it keeps the logic simple and fast (one sort plus a single pass instead of
+comparing every task against every other task), and for a single pet owner's daily routine
+tasks are short and rarely stack that deeply, so the simpler consecutive-pairs check is good
+enough and much easier to read. I also made conflicts return a warning message instead of
+raising an error, so a scheduling clash never crashes the app.
 
 ---
 

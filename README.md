@@ -72,14 +72,15 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
+PawPal+ adds a small algorithmic layer in `pawpal_system.py`. All of it is
+demonstrated end-to-end by the CLI demo in `main.py`.
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | `Scheduler.sort_by_time()`, `Scheduler.sort_by_priority()` | `sort_by_time()` sorts by `"HH:MM"` start time (unscheduled tasks go last); `sort_by_priority()` orders high→low priority with shorter tasks breaking ties |
+| Filtering | `Scheduler.filter_by_status()`, `Owner.tasks_for_pet()` | Filter by completion status (done vs. todo) or by which pet a task belongs to |
+| Conflict handling | `Scheduler.find_conflicts()`, `Scheduler.conflict_warnings()` | Sorts by time and flags any task whose slot overlaps the next; `conflict_warnings()` returns friendly warning strings instead of raising, so a clash never crashes the app |
+| Recurring tasks | `Task.mark_complete()` (uses `frequency` + `due_date`) | Completing a `"daily"`/`"weekly"` task auto-creates the next occurrence with its `due_date` advanced via `datetime.timedelta` |
 
 ## 📸 Demo Walkthrough
 
